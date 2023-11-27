@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class UserControll {
+public class UserControl {
 
     private final UserService userService;
 
-    public UserControll(UserService userService) {
+    public UserControl(UserService userService) {
         this.userService = userService;
     }
 

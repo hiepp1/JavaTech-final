@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,14 +14,13 @@ import javax.persistence.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private int id;
+    @Column(name="full_name")
     private String fullname;
+    private String email;
     private String username;
     private String password;
-    private String email;
-    private String role;
     private String profilePicture;
-
-
-
+    private boolean isEnable;
 }

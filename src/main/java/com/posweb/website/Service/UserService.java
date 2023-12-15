@@ -8,7 +8,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    public enum ChangePasswordResult {
+        SUCCESS,
+        SAME_PASSWORD,
+        USER_NOT_FOUND,
+        FAILURE
+    }
+
+
     private final UserRepo userRepo;
+
+
+    public User save(User user) {
+        return userRepo.save(user);
+    }
 
     public UserService(UserRepo userRepo) {
         this.userRepo = userRepo;
@@ -18,13 +31,21 @@ public class UserService {
         return userRepo.findByUsernameAndPassword(username, password).orElse(null);
     }
 
-    public boolean changePassword(PasswordChangeRequest request) {
-        User user = userRepo.findByUsernameAndPassword(request.getUsername(), request.getOldPassword()).orElse(null);
-        if (user != null) {
-            user.setPassword(request.getNewPassword());
-            userRepo.save(user);
-            return true;
+    public ChangePasswordResult changePassword(PasswordChangeRequest request)
+    {
+        User user = userRepo.findByUsername(request.getUsername()).orElse(null);
+        if (user == null) {
+            return ChangePasswordResult.USER_NOT_FOUND;
+        } else if (user.getPassword().equals(request.getOldPassword())) {
+            if (request.getNewPassword().equals(request.getOldPassword())) {
+                return ChangePasswordResult.SAME_PASSWORD;
+            } else {
+                user.setPassword(request.getNewPassword());
+                userRepo.save(user);
+                return ChangePasswordResult.SUCCESS;
+            }
+        } else {
+            return ChangePasswordResult.FAILURE;
         }
-        return false;
     }
 }

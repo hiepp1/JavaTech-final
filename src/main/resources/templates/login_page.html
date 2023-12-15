@@ -1,3 +1,28 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http:://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Login Page</title>-->
+<!--    <link rel="stylesheet" href="css/style.css">-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="form">-->
+<!--    <h1>Login</h1>-->
+<!--        <form method="post" action="/login" th:object="${loginRequest}">-->
+<!--        <label for="username">Username:</label>-->
+<!--        <input type="text" id="username" name="username" required>-->
+
+<!--        <label for="password">Password:</label>-->
+<!--        <input type="password" id="password" name="password" required>-->
+
+<!--        <button type="submit">Sign In</button>-->
+<!--        <a href="#">Forgot Password?</a>-->
+<!--    </form>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http:://www.thymeleaf.org">
 <head>
@@ -9,6 +34,9 @@
 
 <div class="form">
     <form method="post" action="/login" th:object="${loginRequest}">
+        <div th:if="${loginError}" id="alert" class="alert">
+            <strong th:text="${loginError}"></strong>
+        </div>
         <h2>Login</h2>
         <div class="input-box">
             <i class="fa fa-user" aria-hidden="true"></i>
@@ -21,8 +49,16 @@
         <div class="input-box">
             <input type="submit" name="sign-in" value="Login">
         </div>
-        <a href="#">Forget Password</a>
+        <a href="/changePassword">Forget Password</a>
     </form>
 </div>
+
+<script>
+    setTimeout(function() {
+        var alert = document.getElementById('alert');
+        if(alert) alert.style.display = 'none';
+    }, 5000);
+</script>
+
 </body>
 </html>

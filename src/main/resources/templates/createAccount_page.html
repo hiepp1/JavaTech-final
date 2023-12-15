@@ -1,0 +1,26 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Account</title>
+</head>
+<body>
+
+<h1>Create Account</h1>
+
+<form action="#" th:action="@{/createAccount}" th:object="${user}" method="post">
+  <label for="fullname">Full Name:</label>
+  <input th:field="*{fullname}" type="text" name="fullname" required>
+  <br>
+
+  <label for="email">Gmail Address:</label>
+  <input th:field="*{email}" type="email" name="email" required>
+  <br>
+
+  <input type="submit" value="Create Account">
+</form>
+
+</body>
+</html>
+
+

@@ -27,10 +27,10 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public User authenticate(String username, String password) {
+    public User authenticate(String username, String password)
+    {
         return userRepo.findByUsernameAndPassword(username, password).orElse(null);
     }
-
     public ChangePasswordResult changePassword(PasswordChangeRequest request)
     {
         User user = userRepo.findByUsername(request.getUsername()).orElse(null);

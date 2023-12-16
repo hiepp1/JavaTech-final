@@ -15,7 +15,7 @@ public class DatabaseService {
     }
 
     public void creatUserIfNotExists() {
-        String sql = "INSERT INTO user (username, password, is_enable) SELECT 'admin', 'admin', 1 WHERE NOT EXISTS (SELECT * FROM user WHERE username='admin')";
+        String sql = "INSERT INTO user (username, password, is_enable, role) SELECT 'admin', 'admin', 1, 'ADMIN' WHERE NOT EXISTS (SELECT * FROM user WHERE username='admin')";
         jdbcTemplate.execute(sql);
     }
 }

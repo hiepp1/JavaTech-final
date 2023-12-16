@@ -22,5 +22,7 @@ public class User {
     private String username;
     private String password;
     private String profilePicture;
+    private String role;
     private boolean isEnable;
+
 }

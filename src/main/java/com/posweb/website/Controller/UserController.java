@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-public class UserControll {
+public class UserController {
 
     @Value("${base_url}")
     private String baseUrl;
@@ -33,7 +33,7 @@ public class UserControll {
     private ConfirmationTokenRepo confirmationTokenRepo;
 
 
-    public UserControll(UserService userService, EmailService emailService) {
+    public UserController(UserService userService, EmailService emailService) {
         this.userService = userService;
         this.emailService = emailService;
     }

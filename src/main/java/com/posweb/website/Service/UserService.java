@@ -3,10 +3,15 @@ package com.posweb.website.Service;
 import com.posweb.website.Model.PasswordChangeRequest;
 import com.posweb.website.Model.User;
 import com.posweb.website.Repository.UserRepo;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
+
+    private final UserRepo userRepo;
 
     public enum ChangePasswordResult {
         SUCCESS,
@@ -14,9 +19,6 @@ public class UserService {
         USER_NOT_FOUND,
         FAILURE
     }
-
-
-    private final UserRepo userRepo;
 
 
     public User save(User user) {
@@ -29,11 +31,13 @@ public class UserService {
 
     public User authenticate(String username, String password)
     {
-        return userRepo.findByUsernameAndPassword(username, password).orElse(null);
+        return userRepo.findByUsernameAndPassword(username, password);
     }
+
+
     public ChangePasswordResult changePassword(PasswordChangeRequest request)
     {
-        User user = userRepo.findByUsername(request.getUsername()).orElse(null);
+        User user = userRepo.findByUsername(request.getUsername());
         if (user == null) {
             return ChangePasswordResult.USER_NOT_FOUND;
         } else if (user.getPassword().equals(request.getOldPassword())) {
@@ -48,4 +52,12 @@ public class UserService {
             return ChangePasswordResult.FAILURE;
         }
     }
+
+    public ChangePasswordResult changePasswordForNewSale(User user, String newPassword)
+    {
+        user.setPassword(newPassword);
+        userRepo.save(user);
+        return ChangePasswordResult.SUCCESS;
+    }
+
 }

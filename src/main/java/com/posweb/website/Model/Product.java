@@ -1,6 +1,7 @@
 package com.posweb.website.Model;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,19 +12,22 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@Data
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
+    @Column(name = "id")
     private int id;
-    @Column(name = "product_name")
+    @Column(unique = true)
+    private String barcode;
     private String name;
     private int importPrice;
     private int retailPrice;
     private String category;
     private Date date;
-    private byte img;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] picture;
 }
 
 ////barcode / QR Code, product name, import price, retail price, category, creation date.

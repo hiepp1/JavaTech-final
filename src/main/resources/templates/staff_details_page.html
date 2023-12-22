@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>Salesperson Page</title>
+    <title>Staff Details</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container">
-    <h1>Salesperson Page</h1>
+    <h1>Staff Details</h1>
     <div class="row">
         <div class="col-4">
-            <img th:src="${user.picture != null ? user.picture : '/images/anonymous_avatar.png'}" alt="Profile Picture" class="img-fluid">
+            <img th:src="${user.picture}" alt="Profile Picture" class="img-fluid">
         </div>
         <div class="col-8">
             <table class="table table-bordered">
@@ -38,7 +38,6 @@
                     <td th:text="${user.isEnable ? 'Yes' : 'No'}"></td>
                 </tr>
             </table>
-            <a th:href="@{'/update-profile'}" class="btn btn-primary">Update Profile</a>
         </div>
     </div>
 </div>

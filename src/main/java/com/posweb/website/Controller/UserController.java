@@ -1,5 +1,6 @@
 package com.posweb.website.Controller;
 
+import com.posweb.website.Model.ChangePasswordForm;
 import com.posweb.website.Model.ConfirmationToken;
 import com.posweb.website.Model.PasswordChangeRequest;
 import com.posweb.website.Model.User;
@@ -17,10 +18,19 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
+
 
 @Controller
+@RequestMapping("")
 public class UserController {
 
+    private String tokentemp;
     @Value("${base_url}")
     private String baseUrl;
     @Autowired
@@ -31,6 +41,10 @@ public class UserController {
     private UserRepo userRepo;
     @Autowired
     private ConfirmationTokenRepo confirmationTokenRepo;
+    @ModelAttribute("changePasswordForm")
+    public ChangePasswordForm changePasswordForm() {
+        return new ChangePasswordForm();
+    }
 
 
     public UserController(UserService userService, EmailService emailService) {
@@ -47,10 +61,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute User user, RedirectAttributes redirectAttributes)
+    public String login(@ModelAttribute User user, RedirectAttributes redirectAttributes, HttpSession session)
     {
         User authenticate = userService.authenticate(user.getUsername(), user.getPassword());
         if (authenticate != null) {
+            session.setAttribute("loggedInUser", authenticate);
             if (authenticate.isEnable()) {
                 if (authenticate.getRole().equals("ADMIN")) {
                     return "redirect:/admin";
@@ -110,7 +125,7 @@ public class UserController {
     }
     //###########################------------------------###############################
 
-    //----------------------------CREATE SALEPERSON ACCOUNT------------------------NotDone
+    //----------------------------CREATE AND CONFIRM SALEPERSON ACCOUNT------------------------Done
     @RequestMapping(value = "/createAccount", method = RequestMethod.GET)
     public ModelAndView getCreateAccount(ModelAndView modelAndView, User user)
     {
@@ -118,9 +133,9 @@ public class UserController {
         modelAndView.setViewName("createAccount_page");
         return modelAndView;
     }
+
     @RequestMapping(value = "/createAccount", method = RequestMethod.POST)
-    public ModelAndView createAccount(ModelAndView modelAndView, User user)
-    {
+    public ModelAndView createAccount(ModelAndView modelAndView, User user) throws IOException {
         User existingUser = userRepo.findByEmailIgnoreCase(user.getEmail());
         if (existingUser != null) {
             modelAndView.addObject("message", "This email already exists!");
@@ -137,6 +152,9 @@ public class UserController {
             user.setPassword(user_password_temp);
             user.setEnable(false);
             user.setRole("SALE");
+            String imagePath = "src/main/resources/static/image/anonymous_avatar.png";
+            byte[] imageBytes = getImageBytes(imagePath);
+            user.setPicture(imageBytes);
 
             userRepo.save(user);
             ConfirmationToken confirmationToken = new ConfirmationToken(user);
@@ -156,50 +174,66 @@ public class UserController {
         }
         return modelAndView;
     }
-    @RequestMapping(value = "/confirmAccount", method = {RequestMethod.GET, RequestMethod.POST})
-    public ModelAndView confirmUserAccount(ModelAndView modelAndView, @RequestParam("token") String confirmationToken)
-    {
+
+    @RequestMapping(value="/confirmAccount", method=RequestMethod.GET)
+    public ModelAndView getChangePassword(ModelAndView modelAndView, @RequestParam("token") String confirmationToken) {
         ConfirmationToken token = confirmationTokenRepo.findByConfirmationToken(confirmationToken);
-        if (token != null) {
-            User user = userRepo.findByEmailIgnoreCase(token.getUser().getEmail());
-            user.setEnable(true);
-            userRepo.save(user);
-            modelAndView.setViewName("confirmAccount_page");
+        tokentemp = confirmationToken;
+
+        if (token != null && !token.isUsed() && !isTokenExpired(token)) {
+            modelAndView.addObject("confirmationToken", confirmationToken);
+            modelAndView.setViewName("createPassword_page");
         } else {
-            modelAndView.addObject("message", "The link is invalid or broken!");
+            // Token is invalid or has been used, show an error message
+            modelAndView.addObject("message", "The link is invalid or has already been used!");
             modelAndView.setViewName("error_page");
         }
-
         return modelAndView;
     }
-    //###########################------------------------################################
 
-    //----------------------------  ADMIN PAGE ------------------------------------NotDone
-    @GetMapping("/admin")
-    public String getAdmin(Model model)
-    {
-        return "admin_page";
-    }
-    @PostMapping("/admin")
-    public String admin(@ModelAttribute User user, RedirectAttributes redirectAttributes)
-    {
-       return "admin_page";
-    }
-    //###########################------------------------################################
+    @PostMapping("/confirmAccount")
+    public ModelAndView changePassword(ModelAndView modelAndView, @ModelAttribute ChangePasswordForm form) {
 
-    //----------------------------  SALE PAGE -------------------------------------NotDone
-    @GetMapping("/salesperson")
-    public String getSalesperson(Model model)
-    {
-        return "salesperson_page";
-    }
-    @PostMapping("/salesperson")
-    public String Salesperson(@ModelAttribute User user, RedirectAttributes redirectAttributes)
-    {
-        return "salesperson_page";
-    }
-    //###########################------------------------################################
+        ConfirmationToken token = confirmationTokenRepo.findByConfirmationToken(tokentemp);
 
+        if (token != null) {
+            User user = userRepo.findByEmailIgnoreCase(token.getUser().getEmail());
+            if (form.getNewPassword().equals(form.getConfirmPassword())) {
+                // Update the user's password
+                token.setUsed(true);
+                confirmationTokenRepo.save(token);
+                user.setEnable(true);
+                UserService.ChangePasswordResult result = userService.changePasswordForNewSale(user, form.getNewPassword());
+                if (result == UserService.ChangePasswordResult.SUCCESS) {
+                    // Password changed successfully, redirect to /salesperson
+                    modelAndView.setViewName("redirect:/salesperson");
+                } else {
+                    // Password change failed, show an error message
+                    modelAndView.addObject("message", "Failed to change the password.");
+                    modelAndView.setViewName("error_page");
+                }
+            } else {
+                // Passwords do not match, show an error message
+                modelAndView.addObject("message", "Passwords do not match.");
+                modelAndView.setViewName("error_page");
+            }
+        } else {
+            // Token is invalid or broken, show an error message
+            modelAndView.addObject("message", "The token has been used!");
+            modelAndView.setViewName("error_page");
+        }
+        return modelAndView;
+    }
+
+    //Check expired token
+    private boolean isTokenExpired(ConfirmationToken token) {
+        return token.getCreatedDate() != null && token.getCreatedDate().before(new Date());
+    }
+
+    private byte[] getImageBytes(String imagePath) throws IOException {
+        Path path = Paths.get(imagePath);
+        return Files.readAllBytes(path);
+    }
 }
 
 

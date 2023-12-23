@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
+
 @Entity
 @Table(name = "user")
 @Getter
@@ -21,8 +22,9 @@ public class User {
     private String email;
     private String username;
     private String password;
-    private String profilePicture;
     private String role;
     private boolean isEnable;
-
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] picture;
 }

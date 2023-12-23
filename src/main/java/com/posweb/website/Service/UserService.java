@@ -3,9 +3,6 @@ package com.posweb.website.Service;
 import com.posweb.website.Model.PasswordChangeRequest;
 import com.posweb.website.Model.User;
 import com.posweb.website.Repository.UserRepo;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

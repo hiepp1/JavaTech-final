@@ -1,13 +1,9 @@
 package com.posweb.website.Model;
 
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Collections;
+
 
 @Entity
 @Table(name = "user")
@@ -31,5 +27,4 @@ public class User {
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] picture;
-
 }

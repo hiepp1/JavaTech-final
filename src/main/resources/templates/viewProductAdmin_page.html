@@ -212,7 +212,7 @@
 <!--</body>-->
 <!--</html>-->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Product List</title>
@@ -222,28 +222,31 @@
 
 <div class="container py-5">
     <h2 class="text-center mb-4">Product List</h2>
-
+    <form action="/admin/add-product" method="get">
+        <div class="form-group">
+            <input type="submit" value="Add Product" class="btn btn-primary btn-lg">
+        </div>
+    </form>
     <div class="row">
-        <c:forEach var="product" items="${products}">
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card">
+        <div th:each="product : ${products}" class="col-lg-4 col-md-6 mb-4">
+            <div class="card">
 
-                    <form action="/admin/add-product" method="get">
-                        <div class="form-group">
-                            <input type="submit" value="Add Product" class="btn btn-primary btn-lg">
-                        </div>
-                    </form>
+                <form th:action="@{/admin/delete-product}" th:method="post">
+                    <input type="hidden" th:name="productId" th:value="${product.id}" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
 
-                    <img src="path/to/product/image/${product.img}" alt="Product Image" class="card-img-top">
-                    <div class="card-body">
-                        <h5 class="card-title">${product.name}</h5>
-                        <p class="card-text">Category: ${product.category}</p>
-                        <p class="card-text">Import Price: ${product.importPrice}</p>
-                        <p class="card-text">Creation Date: ${product.date}</p>
-                    </div>
+                <td>
+                    <img th:src="'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(product.picture)}" alt="Profile Picture" width="50" height="50">
+                </td>
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${product.name}"></h5>
+                    <p class="card-text" th:text="'Category: ' + ${product.category}"></p>
+                    <p class="card-text" th:text="'Import Price: ' + ${product.importPrice}"></p>
+                    <p class="card-text" th:text="'Creation Date: ' + ${product.date}"></p>
                 </div>
             </div>
-        </c:forEach>
+        </div>
     </div>
 </div>
 </body>

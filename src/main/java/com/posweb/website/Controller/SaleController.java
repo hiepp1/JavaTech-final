@@ -1,39 +1,116 @@
 package com.posweb.website.Controller;
-import org.springframework.security.core.Authentication;
 
+import com.posweb.website.Model.Product;
 import com.posweb.website.Model.User;
 import com.posweb.website.Repository.UserRepo;
-import com.posweb.website.Service.UserService;
+import com.posweb.website.Service.ImageUtils;
+import com.posweb.website.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
 
 @Controller
 @RequestMapping("/salesperson")
 public class SaleController {
 
     @Autowired
-    private UserService service;
+    private UserRepo repo;
 
     @Autowired
-    private UserRepo repo;
+    private ProductService productService;
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request)
+    {
+        request.getSession().invalidate();
+        return "redirect:/login";
+    }
+
     @GetMapping("")
-    public String getSalesperson(Model model, Authentication authentication) {
-        // Assuming UserService has a method to fetch user by username
-        User currentUser = (User) authentication.getPrincipal();
-        model.addAttribute("user", currentUser);
-        return "salesperson_page";
+    public String getSalesperson(Model model)
+    {
+        List<Product> productList = productService.getAllProducts();
+        model.addAttribute("imageUtils", new ImageUtils());
+        model.addAttribute("products", productList);
+        return "viewProductSale_page";
     }
 
     @PostMapping("")
-    public String Salesperson(@ModelAttribute User user, RedirectAttributes redirectAttributes)
+    public String Salesperson(Model model)
+    {
+        return "viewProductSale_page";
+    }
+
+    @GetMapping("/profile")
+    public String getProfile(Model model, HttpSession session) throws IOException {
+        List<Product> productList = productService.getAllProducts();
+        model.addAttribute("imageUtils", new ImageUtils());
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            model.addAttribute("user", loggedInUser);
+            return "salesperson_page";
+        } else {
+            return "redirect:/login";
+        }
+    }
+
+    @PostMapping("/profile")
+    public String Profile(Model model)
     {
         return "salesperson_page";
     }
 
+
+    @GetMapping("/update-avatar")
+    public String updateAvatar(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            model.addAttribute("user", loggedInUser);
+            return "updateAvatar_page";
+        } else {
+            return "redirect:/login";
+        }
+    }
+
+    @PostMapping("/update-avatar")
+    public String updateAvatar(@RequestParam("avatar") MultipartFile avatar,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) throws IOException
+    {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            if (!avatar.isEmpty()) {
+                byte[] imageBytes = avatar.getBytes();
+                loggedInUser.setPicture(imageBytes);
+                repo.save(loggedInUser);
+                redirectAttributes.addFlashAttribute("successMessage", "Avatar updated successfully!");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Please select an image to upload.");
+            }
+            return "redirect:/profile"; // Redirect back to the salesperson page
+        } else {
+            return "redirect:/login";
+        }
+    }
+
+    //------------------GET DEFAULT AVATAR AND ENCODE BYTE--------------------------
+    @ModelAttribute("base64Image")
+    public String base64Image(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null && loggedInUser.getPicture() != null) {
+            return Base64.getEncoder().encodeToString(loggedInUser.getPicture());
+        }
+        return "";
+    }
+
+    //================================================================================
 }

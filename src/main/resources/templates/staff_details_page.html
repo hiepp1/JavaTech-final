@@ -9,7 +9,7 @@
     <h1>Staff Details</h1>
     <div class="row">
         <div class="col-4">
-            <img th:src="${user.picture}" alt="Profile Picture" class="img-fluid">
+            <img th:src="${imageUtils.encodeImageToBase64(user.picture)}" alt="Profile Picture" class="img-fluid">
         </div>
         <div class="col-8">
             <table class="table table-bordered">

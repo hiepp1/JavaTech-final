@@ -22,7 +22,7 @@
             <td th:text="${user.fullname}"></td>
             <td th:text="${user.email}"></td>
             <td>
-                <img th:src="${user.picture}" alt="Profile Picture" width="50" height="50">
+                <img th:src="'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(user.picture)}" alt="Profile Picture" width="50" height="50">
             </td>
             <td>
                 <span th:if="${user.isEnable}" th:text="Yes"></span>

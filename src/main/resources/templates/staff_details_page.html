@@ -8,9 +8,9 @@
 <div class="container">
     <h1>Staff Details</h1>
     <div class="row">
-        <div class="col-4">
-            <img th:src="${imageUtils.encodeImageToBase64(user.picture)}" alt="Profile Picture" class="img-fluid">
-        </div>
+        <td th:if="${user.picture != null}">
+            <img th:src="'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(user.picture)}" alt="Profile Picture" width="50" height="50">
+        </td>
         <div class="col-8">
             <table class="table table-bordered">
                 <tr>

@@ -13,8 +13,9 @@
     <form id="updateProductForm" action="/admin/update-product" method="post" enctype="multipart/form-data">
         <div class="text-center mb-4">
             <input type="file" name="image" id="imageInput" onchange="previewImage()">
-            <img id="imagePreview" alt="Current Image" width="150" height="150"
-                 th:src="${product.picture != null ? 'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(product.picture)} : ''}">
+            <td th:if="${product.picture != null}">
+                <img th:src="'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(product.picture)}" alt="Profile Picture" width="50" height="50">
+            </td>
         </div>
 
         <div class="form-group">

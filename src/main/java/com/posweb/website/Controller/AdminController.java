@@ -133,7 +133,7 @@ public class AdminController {
     }
 
     @PostMapping("/update-product")
-    public String updateProduct(@RequestParam("id") int productId,
+    public String updateProduct(@RequestParam("productId") int productId,
                                 @ModelAttribute ProductForm updateProductForm,
                                 @RequestParam(value = "image", required = false) MultipartFile image,
                                 RedirectAttributes redirectAttributes)

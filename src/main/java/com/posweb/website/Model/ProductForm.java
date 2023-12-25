@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductForm {
+    private int id;
     private String name;
     private String category;
     private int importPrice;

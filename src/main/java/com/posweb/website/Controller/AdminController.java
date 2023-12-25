@@ -54,7 +54,8 @@ public class AdminController {
     }
 
     @GetMapping("/add-product")
-    public String getAddProduct(Model model) {
+    public String getAddProduct(Model model)
+    {
         model.addAttribute("productForm", new ProductForm());
         return "product/add_new_product";
     }
@@ -62,7 +63,8 @@ public class AdminController {
     @PostMapping("/add-product")
     public String addProduct(@ModelAttribute ProductForm productForm,
                              @RequestParam("image") MultipartFile image,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes)
+    {
         try {
             Product newProduct = new Product();
             newProduct.setName(productForm.getName());
@@ -82,26 +84,86 @@ public class AdminController {
 
         return "redirect:/admin/view-product";
     }
+
     @PostMapping("/delete-product")
-    public String deleteProduct(@RequestParam("productId") int productId, RedirectAttributes redirectAttributes) {
+    public String deleteProduct(@RequestParam("productId") int productId, RedirectAttributes redirectAttributes)
+    {
         productRepo.deleteById(productId);
         redirectAttributes.addFlashAttribute("message", "Product deleted successfully");
         return "redirect:/admin/view-product";
     }
 
     @GetMapping("/view-product")
-    public String viewProducts(Model model) {
+    public String viewProducts(Model model)
+    {
         List<Product> productList = productService.getAllProducts();
         model.addAttribute("imageUtils", new ImageUtils());
         model.addAttribute("products", productList);
         return "viewProductAdmin_page";
     }
 
+//    @GetMapping("/update-product")
+//    public String getUpdateProduct(@RequestParam("id") int productId, Model model)
+//    {
+//        Product product = productRepo.findById(productId);
+//        if (product == null) {
+//            return "redirect:/error";
+//        }
+//        model.addAttribute("product", product);
+//        model.addAttribute("imageUtils", new ImageUtils());
+//        model.addAttribute("updateProductForm", new ProductForm()); // Add a form for updating the product
+//        return "updateProduct_page";
+//    }
+    @GetMapping("/update-product")
+    public String getUpdateProduct(@RequestParam("id") int productId, Model model)
+    {
+        Product product = productRepo.findById(productId);
+        if (product == null) {
+            return "redirect:/error";
+        }
+        ProductForm updateProductForm = new ProductForm();
+        updateProductForm.setName(product.getName());
+        updateProductForm.setCategory(product.getCategory());
+        updateProductForm.setImportPrice(product.getImportPrice());
 
+        model.addAttribute("product", product);
+        model.addAttribute("imageUtils", new ImageUtils());
+        model.addAttribute("updateProductForm", updateProductForm); // Set form values
+        return "updateProduct_page";
+    }
+
+    @PostMapping("/update-product")
+    public String updateProduct(@RequestParam("id") int productId,
+                                @ModelAttribute ProductForm updateProductForm,
+                                @RequestParam(value = "image", required = false) MultipartFile image,
+                                RedirectAttributes redirectAttributes)
+    {
+        Product product = productRepo.findById(productId);
+        if (product == null) {
+            return "redirect:/error";
+        }
+        product.setName(updateProductForm.getName());
+        product.setCategory(updateProductForm.getCategory());
+        product.setImportPrice(updateProductForm.getImportPrice());
+
+        try {
+            if (image != null && !image.isEmpty()) {
+                product.setPicture(image.getBytes());
+            }
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "Error updating product. Please try again.");
+            return "redirect:/admin/view-product";
+        }
+        productRepo.save(product);
+        redirectAttributes.addFlashAttribute("message", "Product updated successfully");
+
+        return "redirect:/admin/view-product";
+    }
 
     //---------------------------Lock/Unlock Account===---------------------------
     @RequestMapping(value = "/staff-lock/{userId}", method = RequestMethod.GET)
-    public String lockStaffAccount(@PathVariable int userId) {
+    public String lockStaffAccount(@PathVariable int userId)
+    {
         User user = userRepo.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
         user.setEnable(false);
         userRepo.save(user);
@@ -109,7 +171,8 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/staff-unlock/{userId}", method = RequestMethod.GET)
-    public String unlockStaffAccount(@PathVariable int userId) {
+    public String unlockStaffAccount(@PathVariable int userId)
+    {
         User user = userRepo.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
         user.setEnable(true);
         userRepo.save(user);
@@ -120,7 +183,8 @@ public class AdminController {
 
     //Salesperson Details
     @GetMapping("/staff-details/{userId}")
-    public String viewStaffDetails(@PathVariable int userId, Model model) {
+    public String viewStaffDetails(@PathVariable int userId, Model model)
+    {
         User user = userRepo.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
         model.addAttribute("user", user);
         model.addAttribute("imageUtils", new ImageUtils());

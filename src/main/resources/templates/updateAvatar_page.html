@@ -9,21 +9,34 @@
     <h1>Update Your Avatar</h1>
     <div class="row">
         <div class="col-4">
-            <img th:src="'data:image/png;base64,' + ${base64Image}" alt="Current Avatar" class="img-fluid">
+            <img id="avatarPreview" th:src="'data:image/png;base64,' + ${base64Image}" alt="Current Avatar" class="img-fluid">
         </div>
         <div class="col-8">
-            <form action="/salesperson/update-avatar" method="post" enctype="multipart/form-data">
+            <form id="updateAvatarForm" action="/salesperson/update-avatar" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="avatar">Choose New Avatar:</label>
-                    <input type="file" id="avatar" name="avatar" class="form-control">
+                    <input type="file" id="avatar" name="avatar" class="form-control" onchange="previewAvatar()">
                 </div>
                 <button type="submit" class="btn btn-primary">Update Avatar</button>
             </form>
         </div>
     </div>
 </div>
-</body>
-</html>
+
+<script>
+    // Function to handle file input change and preview the selected image
+    function previewAvatar() {
+        var input = document.getElementById('avatar');
+        var preview = document.getElementById('avatarPreview');
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+</script>
 
 <!-- Add this to salesperson_page.html and updateAvatar_page.html -->
 <div th:if="${successMessage}" class="alert alert-success" role="alert">
@@ -32,3 +45,6 @@
 <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
     <span th:text="${errorMessage}"></span>
 </div>
+
+</body>
+</html>

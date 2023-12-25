@@ -236,9 +236,16 @@
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
 
-                <td>
+                <form th:action="@{/admin/update-product}" method="post" enctype="multipart/form-data"
+                      th:if="${product != null}">
+                    <input type="hidden" name="id" th:value="${product.id}" />
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+
+                <td th:if="${product.picture != null}">
                     <img th:src="'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(product.picture)}" alt="Profile Picture" width="50" height="50">
                 </td>
+
                 <div class="card-body">
                     <h5 class="card-title" th:text="${product.name}"></h5>
                     <p class="card-text" th:text="'Category: ' + ${product.category}"></p>

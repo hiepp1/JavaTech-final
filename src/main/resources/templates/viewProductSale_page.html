@@ -18,6 +18,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/salesperson/profile">Profile</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/salesperson/checkout">Checkout Counter</a>
+                </li>
             </ul>
             <ul class="navbar-nav ml-auto"> <!-- Align items to the right -->
                 <li class="nav-item">
@@ -36,7 +39,7 @@
     <div class="row">
         <div th:each="product : ${products}" class="col-lg-4 col-md-6 mb-4">
             <div class="card">
-                <td>
+                <td th:if="${product.picture != null}">
                     <img th:src="'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(product.picture)}" alt="Profile Picture" width="50" height="50">
                 </td>
                 <div class="card-body">

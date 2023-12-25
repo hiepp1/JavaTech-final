@@ -47,15 +47,19 @@ public class UserController {
     }
 
 
-    public UserController(UserService userService, EmailService emailService) {
+    public UserController(UserService userService, EmailService emailService)
+    {
         this.userService = userService;
         this.emailService = emailService;
     }
 
     //-----------------------------------LOG IN-----------------------------------Done
     @GetMapping("/login")
-    public String getLoginPage(Model model)
+    public String getLoginPage(Model model, HttpSession session)
     {
+        if (session.getAttribute("loggedInUser") != null) {
+            return "redirect:/admin";
+        }
         model.addAttribute("loginRequest", new User());
         return "login_page";
     }
@@ -135,7 +139,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "/createAccount", method = RequestMethod.POST)
-    public ModelAndView createAccount(ModelAndView modelAndView, User user) throws IOException {
+    public ModelAndView createAccount(ModelAndView modelAndView, User user) throws IOException
+    {
         User existingUser = userRepo.findByEmailIgnoreCase(user.getEmail());
         if (existingUser != null) {
             modelAndView.addObject("message", "This email already exists!");
@@ -176,7 +181,8 @@ public class UserController {
     }
 
     @RequestMapping(value="/confirmAccount", method=RequestMethod.GET)
-    public ModelAndView getChangePassword(ModelAndView modelAndView, @RequestParam("token") String confirmationToken) {
+    public ModelAndView getChangePassword(ModelAndView modelAndView, @RequestParam("token") String confirmationToken)
+    {
         ConfirmationToken token = confirmationTokenRepo.findByConfirmationToken(confirmationToken);
         tokentemp = confirmationToken;
 
@@ -192,7 +198,8 @@ public class UserController {
     }
 
     @PostMapping("/confirmAccount")
-    public ModelAndView changePassword(ModelAndView modelAndView, @ModelAttribute ChangePasswordForm form) {
+    public ModelAndView changePassword(ModelAndView modelAndView, @ModelAttribute ChangePasswordForm form)
+    {
 
         ConfirmationToken token = confirmationTokenRepo.findByConfirmationToken(tokentemp);
 
@@ -226,11 +233,13 @@ public class UserController {
     }
 
     //Check expired token
-    private boolean isTokenExpired(ConfirmationToken token) {
+    private boolean isTokenExpired(ConfirmationToken token)
+    {
         return token.getCreatedDate() != null && token.getCreatedDate().before(new Date());
     }
 
-    private byte[] getImageBytes(String imagePath) throws IOException {
+    private byte[] getImageBytes(String imagePath) throws IOException
+    {
         Path path = Paths.get(imagePath);
         return Files.readAllBytes(path);
     }

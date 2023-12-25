@@ -36,12 +36,12 @@ public class AdminController {
     @GetMapping("")
     public String getAdmin(Model model)
     {
-        return "admin_page";
+        return "account/admin/admin_page";
     }
     @PostMapping("")
     public String admin(@ModelAttribute User user, RedirectAttributes redirectAttributes)
     {
-        return "admin_page";
+        return "account/admin/admin_page";
     }
 
     @GetMapping("/staff-list")
@@ -50,7 +50,7 @@ public class AdminController {
         List<User> staffList = userRepo.findByRole("SALE");
         model.addAttribute("staffList", staffList);
         model.addAttribute("imageUtils", new ImageUtils());
-        return "staff_list";
+        return "account/staff/staff_list";
     }
 
     @GetMapping("/add-product")
@@ -99,7 +99,7 @@ public class AdminController {
         List<Product> productList = productService.getAllProducts();
         model.addAttribute("imageUtils", new ImageUtils());
         model.addAttribute("products", productList);
-        return "viewProductAdmin_page";
+        return "product/viewProductAdmin_page";
     }
 
 //    @GetMapping("/update-product")
@@ -129,7 +129,7 @@ public class AdminController {
         model.addAttribute("product", product);
         model.addAttribute("imageUtils", new ImageUtils());
         model.addAttribute("updateProductForm", updateProductForm); // Set form values
-        return "updateProduct_page";
+        return "product/updateProduct_page";
     }
 
     @PostMapping("/update-product")
@@ -188,6 +188,6 @@ public class AdminController {
         User user = userRepo.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
         model.addAttribute("user", user);
         model.addAttribute("imageUtils", new ImageUtils());
-        return "staff_details_page";
+        return "account/staff/staff_details_page";
     }
 }

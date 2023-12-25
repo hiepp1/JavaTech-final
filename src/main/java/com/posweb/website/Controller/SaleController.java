@@ -19,7 +19,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -53,13 +52,13 @@ public class SaleController {
         List<Product> productList = productService.getAllProducts();
         model.addAttribute("imageUtils", new ImageUtils());
         model.addAttribute("products", productList);
-        return "viewProductSale_page";
+        return "product/viewProductSale_page";
     }
 
     @PostMapping("")
     public String Salesperson(Model model)
     {
-        return "viewProductSale_page";
+        return "product/viewProductSale_page";
     }
 
     @GetMapping("/profile")
@@ -70,7 +69,7 @@ public class SaleController {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser != null) {
             model.addAttribute("user", loggedInUser);
-            return "salesperson_page";
+            return "account/staff/salesperson_page";
         } else {
             return "redirect:/login";
         }
@@ -79,7 +78,7 @@ public class SaleController {
     @PostMapping("/profile")
     public String Profile(Model model)
     {
-        return "salesperson_page";
+        return "account/staff/salesperson_page";
     }
 
 
@@ -89,7 +88,7 @@ public class SaleController {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser != null) {
             model.addAttribute("user", loggedInUser);
-            return "updateAvatar_page";
+            return "account/updateAvatar_page";
         } else {
             return "redirect:/login";
         }
@@ -132,7 +131,7 @@ public class SaleController {
     public String showCheckoutCounter(Model model) {
         model.addAttribute("customer", new Customer());
         model.addAttribute("product", new Product());
-        return "checkoutCounter_page";
+        return "transactions/checkoutCounter_page";
     }
 
     @PostMapping("/checkout")
@@ -198,7 +197,7 @@ public class SaleController {
     {
         List<Customer> customerList = customerService.findAll();
         model.addAttribute("customerList", customerList);
-        return "list_of_customers";
+        return "customer/list_of_customers";
     }
 
     @GetMapping("/purchase-history")
@@ -208,7 +207,7 @@ public class SaleController {
             List<Order> purchaseHistoryList = orderService.findOrdersByCustomer(customer);
             model.addAttribute("customer", customer);
             model.addAttribute("purchaseHistoryList", purchaseHistoryList);
-            return "purchase_history";
+            return "customer/purchase_history";
         } else {
             return "redirect:/salesperson/customers";
         }

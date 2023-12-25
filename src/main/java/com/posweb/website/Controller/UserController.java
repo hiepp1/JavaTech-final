@@ -61,7 +61,7 @@ public class UserController {
             return "redirect:/admin";
         }
         model.addAttribute("loginRequest", new User());
-        return "login_page";
+        return "account/login";
     }
 
     @PostMapping("/login")
@@ -104,7 +104,7 @@ public class UserController {
     public String getChangePasswordPage(Model model)
     {
         model.addAttribute("changepasswordRequest", new User());
-        return "changePassword_page";
+        return "account/changePassword";
     }
 
     @PostMapping("/changePassword")
@@ -144,7 +144,7 @@ public class UserController {
         User existingUser = userRepo.findByEmailIgnoreCase(user.getEmail());
         if (existingUser != null) {
             modelAndView.addObject("message", "This email already exists!");
-            modelAndView.setViewName("error_page");
+            modelAndView.setViewName("error/error_page");
         } else {
 
             //Split and set user's account
@@ -175,7 +175,7 @@ public class UserController {
             emailService.sendEmail(mailMessage);
 
             modelAndView.addObject("email", "Email has been sent");
-            modelAndView.setViewName("createAccount_page");
+            modelAndView.setViewName("account/createAccount_page");
         }
         return modelAndView;
     }
@@ -188,11 +188,11 @@ public class UserController {
 
         if (token != null && !token.isUsed() && !isTokenExpired(token)) {
             modelAndView.addObject("confirmationToken", confirmationToken);
-            modelAndView.setViewName("createPassword_page");
+            modelAndView.setViewName("account/createPassword_page");
         } else {
             // Token is invalid or has been used, show an error message
             modelAndView.addObject("message", "The link is invalid or has already been used!");
-            modelAndView.setViewName("error_page");
+            modelAndView.setViewName("error/error_page");
         }
         return modelAndView;
     }
@@ -217,17 +217,17 @@ public class UserController {
                 } else {
                     // Password change failed, show an error message
                     modelAndView.addObject("message", "Failed to change the password.");
-                    modelAndView.setViewName("error_page");
+                    modelAndView.setViewName("error/error_page");
                 }
             } else {
                 // Passwords do not match, show an error message
                 modelAndView.addObject("message", "Passwords do not match.");
-                modelAndView.setViewName("error_page");
+                modelAndView.setViewName("error/error_page");
             }
         } else {
             // Token is invalid or broken, show an error message
             modelAndView.addObject("message", "The token has been used!");
-            modelAndView.setViewName("error_page");
+            modelAndView.setViewName("error/error_page");
         }
         return modelAndView;
     }

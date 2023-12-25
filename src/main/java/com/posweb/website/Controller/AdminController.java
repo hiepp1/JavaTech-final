@@ -102,6 +102,18 @@ public class AdminController {
         return "viewProductAdmin_page";
     }
 
+//    @GetMapping("/update-product")
+//    public String getUpdateProduct(@RequestParam("id") int productId, Model model)
+//    {
+//        Product product = productRepo.findById(productId);
+//        if (product == null) {
+//            return "redirect:/error";
+//        }
+//        model.addAttribute("product", product);
+//        model.addAttribute("imageUtils", new ImageUtils());
+//        model.addAttribute("updateProductForm", new ProductForm()); // Add a form for updating the product
+//        return "updateProduct_page";
+//    }
     @GetMapping("/update-product")
     public String getUpdateProduct(@RequestParam("id") int productId, Model model)
     {
@@ -109,9 +121,14 @@ public class AdminController {
         if (product == null) {
             return "redirect:/error";
         }
+        ProductForm updateProductForm = new ProductForm();
+        updateProductForm.setName(product.getName());
+        updateProductForm.setCategory(product.getCategory());
+        updateProductForm.setImportPrice(product.getImportPrice());
+
         model.addAttribute("product", product);
         model.addAttribute("imageUtils", new ImageUtils());
-        model.addAttribute("updateProductForm", new ProductForm()); // Add a form for updating the product
+        model.addAttribute("updateProductForm", updateProductForm); // Set form values
         return "updateProduct_page";
     }
 

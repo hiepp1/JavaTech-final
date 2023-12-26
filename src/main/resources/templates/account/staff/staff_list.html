@@ -1,94 +1,9 @@
-<!--<!DOCTYPE html>-->
-<!--<html>-->
-<!--<head>-->
-<!--    <title>Staff List</title>-->
-<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
-<!--    <style>-->
-<!--        .container {-->
-<!--            margin-top: 50px;-->
-<!--        }-->
-
-<!--        h1 {-->
-<!--            margin-bottom: 30px;-->
-<!--        }-->
-
-<!--        .profile-picture {-->
-<!--            max-width: 50px;-->
-<!--            max-height: 50px;-->
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body>-->
-
-<!--<nav class="navbar navbar-expand-lg navbar-light bg-light">-->
-<!--    <div class="container">-->
-<!--        <a class="navbar-brand" href="#">Your Logo</a>-->
-<!--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"-->
-<!--                aria-expanded="false" aria-label="Toggle navigation">-->
-<!--            <span class="navbar-toggler-icon"></span>-->
-<!--        </button>-->
-<!--        <div class="collapse navbar-collapse" id="navbarNav">-->
-<!--            <ul class="navbar-nav ms-auto">-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="#">View Product</a>-->
-<!--                </li>-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="#">Create Account</a>-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</nav>-->
-
-<!--<div class="container">-->
-<!--    <h1 class="text-center">Staff List</h1>-->
-<!--    <table class="table table-bordered">-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th>Full Name</th>-->
-<!--            <th>Email</th>-->
-<!--            <th>Profile Picture</th>-->
-<!--            <th>Enabled</th>-->
-<!--            <th>Actions</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        <tr th:each="user : ${staffList}">-->
-<!--            <td th:text="${user.fullname}"></td>-->
-<!--            <td th:text="${user.email}"></td>-->
-<!--            <td>-->
-<!--                <img class="profile-picture"-->
-<!--                     th:src="'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(user.picture)}"-->
-<!--                     alt="Profile Picture">-->
-<!--            </td>-->
-<!--            <td>-->
-<!--                <span th:if="${user.isEnable}" th:text="Yes"></span>-->
-<!--                <span th:if="${!user.isEnable}" th:text="No"></span>-->
-<!--            </td>-->
-<!--            <td>-->
-<!--                <a th:href="@{/admin/staff-details/{userId}(userId=${user.id})}" class="btn btn-primary">View Details</a>-->
-
-<!--                <form th:action="'/admin/staff-lock/' + ${user.id}" th:method="get" style="display: inline;">-->
-<!--                    <input type="hidden" name="_method" value="put"/>-->
-<!--                    <button type="submit" th:if="${user.isEnable}" class="btn btn-danger">Lock Account</button>-->
-<!--                </form>-->
-<!--                <form th:action="'/admin/staff-unlock/' + ${user.id}" th:method="get" style="display: inline;">-->
-<!--                    <input type="hidden" name="_method" value="put"/>-->
-<!--                    <button type="submit" th:if="${!user.isEnable}" class="btn btn-success">Unlock Account</button>-->
-<!--                </form>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->
-<!--</body>-->
-<!--</html>-->
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Staff List</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .container {
             margin-top: 50px;
@@ -115,6 +30,30 @@
     </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-store"></i> Your Logo
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Create Account</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">View Product</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
 <div class="container">
     <h1 class="text-center">Staff List</h1>
     <table class="table table-bordered">

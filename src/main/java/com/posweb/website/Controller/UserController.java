@@ -112,9 +112,8 @@ public class UserController {
 
     //-----------------------------------CHANGE PASSWORD---------------------------Done
     @GetMapping("/changePassword")
-    public String getChangePasswordPage(Model model)
-    {
-        model.addAttribute("changepasswordRequest", new User());
+    public String getChangePasswordPage(Model model) {
+        model.addAttribute("passwordChangeRequest", new PasswordChangeRequest());
         return "account/changePassword";
     }
 
@@ -224,6 +223,7 @@ public class UserController {
                 confirmationTokenRepo.save(token);
                 user.setEnable(true);
                 UserService.ChangePasswordResult result = userService.changePasswordForNewSale(user, form.getNewPassword());
+
                 if (result == UserService.ChangePasswordResult.SUCCESS) {
 
                     String password_encode = BCrypt.hashpw(form.getNewPassword(), BCrypt.gensalt(10));

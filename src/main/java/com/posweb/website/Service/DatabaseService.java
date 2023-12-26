@@ -1,4 +1,5 @@
 package com.posweb.website.Service;
+import org.mindrot.jbcrypt.BCrypt;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,7 +16,10 @@ public class DatabaseService {
     }
 
     public void creatUserIfNotExists() {
-        String sql = "INSERT INTO user (username, password, is_enable, role) SELECT 'admin', 'admin', 1, 'ADMIN' WHERE NOT EXISTS (SELECT * FROM user WHERE username='admin')";
-        jdbcTemplate.execute(sql);
+        String password = BCrypt.hashpw("admin", BCrypt.gensalt(10));
+//        String sql = "INSERT INTO user (username, password, is_enable, role) SELECT 'admin', , 1, 'ADMIN' WHERE NOT EXISTS (SELECT * FROM user WHERE username='admin')";
+        String sql = "INSERT INTO user (username, password, is_enable, role) SELECT 'admin', ?, 1, 'ADMIN' WHERE NOT EXISTS (SELECT * FROM user WHERE username='admin')";
+
+        jdbcTemplate.update(sql, password);
     }
 }

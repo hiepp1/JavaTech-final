@@ -8,6 +8,7 @@ import com.posweb.website.Repository.ConfirmationTokenRepo;
 import com.posweb.website.Repository.UserRepo;
 import com.posweb.website.Service.EmailService;
 import com.posweb.website.Service.UserService;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -31,6 +32,7 @@ import java.util.Date;
 public class UserController {
 
     private String tokentemp;
+
     @Value("${base_url}")
     private String baseUrl;
     @Autowired
@@ -41,22 +43,21 @@ public class UserController {
     private UserRepo userRepo;
     @Autowired
     private ConfirmationTokenRepo confirmationTokenRepo;
+
     @ModelAttribute("changePasswordForm")
     public ChangePasswordForm changePasswordForm() {
         return new ChangePasswordForm();
     }
 
 
-    public UserController(UserService userService, EmailService emailService)
-    {
+    public UserController(UserService userService, EmailService emailService) {
         this.userService = userService;
         this.emailService = emailService;
     }
 
     //-----------------------------------LOG IN-----------------------------------Done
     @GetMapping("/login")
-    public String getLoginPage(Model model, HttpSession session)
-    {
+    public String getLoginPage(Model model, HttpSession session) {
         if (session.getAttribute("loggedInUser") != null) {
             return "redirect:/admin";
         }
@@ -65,18 +66,27 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute User user, RedirectAttributes redirectAttributes, HttpSession session)
-    {
-        User authenticate = userService.authenticate(user.getUsername(), user.getPassword());
-        if (authenticate != null) {
-            session.setAttribute("loggedInUser", authenticate);
-            if (authenticate.isEnable()) {
-                if (authenticate.getRole().equals("ADMIN")) {
-                    return "redirect:/admin";
-                } else if (authenticate.getRole().equals("SALE")) {
-                    return "redirect:/salesperson";
+    public String login(@ModelAttribute User user, RedirectAttributes redirectAttributes, HttpSession session) {
+
+        User findUser = userRepo.findByUsername(user.getUsername());
+
+        if (findUser != null) {
+
+            String password = findUser.getPassword();
+
+            if (findUser.isEnable()) {
+
+                if (BCrypt.checkpw(user.getPassword(), password)) {
+
+                    session.setAttribute("loggedInUser", findUser);
+
+                    if (findUser.getRole().equals("ADMIN")) {
+                        return "redirect:/admin";
+                    } else if (findUser.getRole().equals("SALE")) {
+                        return "redirect:/salesperson";
+                    }
                 } else {
-                    redirectAttributes.addFlashAttribute("loginError", "Invalid role");
+                    redirectAttributes.addFlashAttribute("loginError", "Check your username and password");
                     return "redirect:/login";
                 }
             } else {
@@ -87,6 +97,7 @@ public class UserController {
             redirectAttributes.addFlashAttribute("loginError", "Login failed, please check your username and password");
             return "redirect:/login";
         }
+        return "redirect:/login";
     }
     //###########################------------------------###############################
 
@@ -145,6 +156,7 @@ public class UserController {
         if (existingUser != null) {
             modelAndView.addObject("message", "This email already exists!");
             modelAndView.setViewName("error/error_page");
+
         } else {
 
             //Split and set user's account
@@ -169,7 +181,8 @@ public class UserController {
             mailMessage.setTo(mail);
             mailMessage.setSubject("Complete Registration!");
             mailMessage.setFrom("hiepgale0817@gmail.com");
-            mailMessage.setText("Your account has been created, this is the link to log in to the system : "
+            mailMessage.setText("Your account has been created: \n" +
+                    "username: " + user_name + "\n" + "This is the link login to the system: "
                     + baseUrl + "/confirmAccount?token=" + confirmationToken.getConfirmationToken());
 
             emailService.sendEmail(mailMessage);
@@ -206,14 +219,18 @@ public class UserController {
         if (token != null) {
             User user = userRepo.findByEmailIgnoreCase(token.getUser().getEmail());
             if (form.getNewPassword().equals(form.getConfirmPassword())) {
-                // Update the user's password
+
                 token.setUsed(true);
                 confirmationTokenRepo.save(token);
                 user.setEnable(true);
                 UserService.ChangePasswordResult result = userService.changePasswordForNewSale(user, form.getNewPassword());
                 if (result == UserService.ChangePasswordResult.SUCCESS) {
-                    // Password changed successfully, redirect to /salesperson
-                    modelAndView.setViewName("redirect:/salesperson");
+
+                    String password_encode = BCrypt.hashpw(form.getNewPassword(), BCrypt.gensalt(10));
+                    user.setPassword(password_encode);
+                    userService.save(user);
+                    modelAndView.setViewName("redirect:/login");
+
                 } else {
                     // Password change failed, show an error message
                     modelAndView.addObject("message", "Failed to change the password.");

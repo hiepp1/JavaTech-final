@@ -1,22 +1,28 @@
 package com.posweb.website.Controller;
 
-import com.posweb.website.Model.Product;
-import com.posweb.website.Model.ProductForm;
-import com.posweb.website.Model.User;
+import com.posweb.website.Model.*;
+import com.posweb.website.Repository.ConfirmationTokenRepo;
 import com.posweb.website.Repository.ProductRepo;
 import com.posweb.website.Repository.UserRepo;
+import com.posweb.website.Service.EmailService;
 import com.posweb.website.Service.ImageUtils;
 import com.posweb.website.Service.ProductService;
 import com.posweb.website.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,13 +32,13 @@ import java.util.NoSuchElementException;
 public class AdminController {
 
     @Autowired
-    private UserService userService;
-    @Autowired
     private UserRepo userRepo;
     @Autowired
     private ProductRepo productRepo;
     @Autowired
     private ProductService productService;
+
+
     @GetMapping("")
     public String getAdmin(Model model)
     {
@@ -102,18 +108,6 @@ public class AdminController {
         return "product/viewProductAdmin_page";
     }
 
-//    @GetMapping("/update-product")
-//    public String getUpdateProduct(@RequestParam("id") int productId, Model model)
-//    {
-//        Product product = productRepo.findById(productId);
-//        if (product == null) {
-//            return "redirect:/error";
-//        }
-//        model.addAttribute("product", product);
-//        model.addAttribute("imageUtils", new ImageUtils());
-//        model.addAttribute("updateProductForm", new ProductForm()); // Add a form for updating the product
-//        return "updateProduct_page";
-//    }
     @GetMapping("/update-product")
     public String getUpdateProduct(@RequestParam("id") int productId, Model model)
     {
@@ -178,6 +172,8 @@ public class AdminController {
         userRepo.save(user);
         return "redirect:/admin/staff-list";
     }
+
+
 
     //------------------------------------------------------------------
 

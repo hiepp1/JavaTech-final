@@ -16,6 +16,5 @@ public class Security implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new SessionInterceptor()).addPathPatterns("/salesperson/**");
         registry.addInterceptor(new SessionInterceptor()).addPathPatterns("/admin/**");
-        registry.addInterceptor(roleService).addPathPatterns("/admin/**");
-    }
+        registry.addInterceptor(roleService).addPathPatterns("/admin/**");}
 }

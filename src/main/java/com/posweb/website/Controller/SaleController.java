@@ -145,52 +145,7 @@ public class SaleController {
         }
         return "redirect:/salesperson";
     }
-//    @PostMapping("/checkout")
-//    public String processCheckout(@RequestParam("productId") int productId,
-//                                  @RequestParam("quantity") int quantity,
-//                                  @ModelAttribute Customer customer,
-//                                  Model model,
-//                                  HttpSession session) {
-//
-//        // Retrieve existing customer by phone number
-//        Customer existingCustomer = customerService.findCustomerByPhoneNumber(customer.getPhoneNumber());
-//
-//        // Validate if the customer is existing
-//        if (existingCustomer != null) {
-//            model.addAttribute("existingCustomer", existingCustomer);
-//        } else {
-//            // Save the new customer
-//            customerService.save(customer);
-//        }
-//
-//        // Retrieve the list of purchased products from the session
-//        List<Product> purchasedProducts = (List<Product>) session.getAttribute("purchasedProducts");
-//
-//        // Initialize the list if it doesn't exist
-//        if (purchasedProducts == null) {
-//            purchasedProducts = new ArrayList<>();
-//        }
-//
-//        // Retrieve product details by product ID (adjust as needed based on your application)
-//        Product product = productService.findById(productId);
-//
-//        // Validate if the product exists
-//        if (product != null) {
-//            // Set the quantity entered by the salesperson
-////            product.setQuantity(5);
-//            purchasedProducts.add(product);
-//            // Save the updated list in the session
-//            session.setAttribute("purchasedProducts", purchasedProducts);
-//
-//            // Add the list of purchased products to the model for display
-//            model.addAttribute("purchasedProducts", purchasedProducts);
-//        } else {
-//            // Handle the case where the product is not found
-//            model.addAttribute("productNotFound", true);
-//        }
-//
-//        return "checkoutCounter_page"; // Return the same page to display the list of purchased products
-//}
+
 
     @GetMapping("/customers")
     public String showCustomerList(Model model)

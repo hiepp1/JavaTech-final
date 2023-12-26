@@ -134,7 +134,7 @@ public class UserController {
     public ModelAndView getCreateAccount(ModelAndView modelAndView, User user)
     {
         modelAndView.addObject("user", user);
-        modelAndView.setViewName("createAccount_page");
+        modelAndView.setViewName("account/admin/createAccount_page");
         return modelAndView;
     }
 
@@ -175,7 +175,7 @@ public class UserController {
             emailService.sendEmail(mailMessage);
 
             modelAndView.addObject("email", "Email has been sent");
-            modelAndView.setViewName("account/createAccount_page");
+            modelAndView.setViewName("account/admin/createAccount_page");
         }
         return modelAndView;
     }

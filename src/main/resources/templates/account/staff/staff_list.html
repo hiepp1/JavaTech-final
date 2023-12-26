@@ -13,8 +13,18 @@
         }
 
         .profile-picture {
-            max-width: 50px;
-            max-height: 50px;
+            width: 80px; /* Kích thước lớn hơn để phóng to */
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .profile-picture-cell {
+            width: 100px; /* Kích thước ô để chứa hình ảnh */
+            text-align: center; /* Căn giữa nội dung */
+        }
+
+        .details-cell {
+            vertical-align: middle; /* Căn giữa theo chiều dọc */
         }
     </style>
 </head>
@@ -35,14 +45,14 @@
         <tr th:each="user : ${staffList}">
             <td th:text="${user.fullname}"></td>
             <td th:text="${user.email}"></td>
-            <td>
+            <td class="profile-picture-cell">
                 <img class="profile-picture" th:src="'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(user.picture)}" alt="Profile Picture">
             </td>
-            <td>
+            <td class="details-cell">
                 <span th:if="${user.isEnable}" th:text="Yes"></span>
                 <span th:if="${!user.isEnable}" th:text="No"></span>
             </td>
-            <td>
+            <td class="details-cell">
                 <a th:href="@{/admin/staff-details/{userId}(userId=${user.id})}" class="btn btn-primary">View Details</a>
 
                 <form th:action="'/admin/staff-lock/' + ${user.id}" th:method="get" style="display: inline;">

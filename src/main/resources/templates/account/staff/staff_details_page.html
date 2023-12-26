@@ -13,8 +13,9 @@
         }
 
         .profile-picture {
-            max-width: 50px;
-            max-height: 50px;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
         }
 
         table {
@@ -26,7 +27,7 @@
 <div class="container">
     <h1 class="text-center">Staff Details</h1>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4 text-center">
             <img class="profile-picture" th:src="'data:image/png;base64,' + ${imageUtils.encodeImageToBase64(user.picture)}" alt="Profile Picture">
         </div>
         <div class="col-md-8">
